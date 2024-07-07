@@ -17,6 +17,27 @@ const scrapeCategory = (browser, url) => new Promise(async(resolve, reject) => {
          */
         await page.waitForSelector('#webpage')
         console.log('>> Website đã load xong...');
+
+        /**
+         * 7/7/2024
+         * eval: Query Selector
+         * Muốn lấy những thẻ li là con trực tiếp của ul và ul là con trực tiếp của thẻ #navbar-menu 
+         * Tại sao là những vì có $$ - 2 dấu $ - querySelectorAll
+         * Query Selector sẽ trả về 1 mảng
+         */
+        const dataCategory = await page.$$eval('#navbar-menu > ul > li', els => {
+            dataCategory = els.map((el) => {
+                return {
+                    category: el.querySelector('a').innerText,
+                    link: el.querySelector('a').href
+                }
+            })
+            return dataCategory;
+        })
+        console.log("dataCategory on scraper: ", dataCategory);
+
+        await page.close()
+        console.log('>>> Tab đã đóng');
         resolve()
     } catch (err) {
         console.log("Lỗi ở scrape category: " + err);
